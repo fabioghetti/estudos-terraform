@@ -154,6 +154,7 @@ simplesmente formata o cõdigo, deixando visualmente mais facil de entender
 
 
 # Aula 20 - Criando um bucket na aws
+Documentação do provider da AWS - https://registry.terraform.io/providers/hashicorp/aws/latest/docs
 
 criar os seguintes arquivos
 
