@@ -271,7 +271,7 @@ lembrando que as variáveis foram criadas e preenchidas com valores default, pod
 
 podemos também recuperar valores de atributos que estão em outros blocos...
 como por exemplo
-```
+
 ```
 resource "azurerm_resource_group" "first_resource_group" {
   name     = "storage_account_resource_group"
@@ -296,3 +296,53 @@ além dos atributos visíveis, podem ver na docs quais atrbituos determinado rec
 
 # Aula 24 Local Values
 
+Documentação - https://developer.hashicorp.com/terraform/language/values/locals
+
+utilizamos o locals para evitar repetir valores que serao utilizados em várias partes do codigo
+
+exemplo:
+locals.tf
+```
+locals {
+  common_tags = {
+    owner      = "fghetti"
+    managed-by = "terraform"
+  }
+}
+```
+
+repare como o storage-account.tf fez referencia ao locals e recuperou as tags para reutilizar em diversos locais do código
+
+storage-account.tf
+```
+resource "azurerm_resource_group" "first_resource_group" {
+  name     = "storage_account_resource_group"
+  location = var.location
+
+  tags = local.common_tags
+}
+
+resource "azurerm_storage_account" "first_storage_account" {
+  name                     = "danielgilstorageaccount"
+  resource_group_name      = azurerm_resource_group.first_resource_group.name
+  location                 = var.location
+  account_tier             = var.account_tier
+  account_replication_type = var.account_replication_type
+
+  tags = local.common_tags
+}
+
+```
+
+# Aula 25 Outputs
+
+Documentação - https://developer.hashicorp.com/terraform/language/values/outputs
+
+é uma forma de ter um output (uma saída) após a execução do nosso terraform
+
+outputs.tf
+```
+output "storage_account_id" {
+  value = azurerm_storage_account.first_storage_account.id
+}
+```
