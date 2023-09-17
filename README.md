@@ -212,4 +212,87 @@ terraform apply
 terraform destroy
 ```
 
+# Aula 22 - Variáveis
+
+Documentação - https://developer.hashicorp.com/terraform/language/values/variables
+
+criando algumas variáveis dentro do arquivo variables.tf
+
+```
+variable "location" {
+  description = "Variável que indica a região onde os recursos vão ser criados"
+  type        = string
+  default     = "West Europe"
+}
+
+variable "account_tier" {
+  description = "Tier da Storage Account na Azure"
+  type        = string
+  default     = "Standard"
+}
+
+variable "account_replication_type" {
+  description = "Tipo de replicação de dados da Storage Account"
+  type        = string
+  default     = "LRS"
+}
+```
+
+utlizando as variáveis dentro de outro arquivo
+
+```
+resource "azurerm_resource_group" "first_resource_group" {
+  name     = "storage_account_resource_group"
+  location = var.location
+
+  tags = local.common_tags
+}
+
+resource "azurerm_storage_account" "first_storage_account" {
+  name                     = "danielgilstorageaccount"
+  resource_group_name      = azurerm_resource_group.first_resource_group.name
+  location                 = var.location
+  account_tier             = var.account_tier
+  account_replication_type = var.account_replication_type
+
+  tags = local.common_tags
+}
+
+resource "azurerm_storage_container" "first_container" {
+  name                 = "imagens"
+  storage_account_name = azurerm_storage_account.first_storage_account.name
+}
+
+```
+ 
+lembrando que as variáveis foram criadas e preenchidas com valores default, podemos ter varias maneiras de sobrescrever esses valores e uutilizar dados específicos... o que vemos muito hoje em dia é a criação de um terraform.tvars para cada ambiente, fazendo com que os parametros mudem de acordo com o local dev, homol e prod
+
+# Aula 23 - Referenciando atributos de outros blocos
+
+podemos também recuperar valores de atributos que estão em outros blocos...
+como por exemplo
+```
+```
+resource "azurerm_resource_group" "first_resource_group" {
+  name     = "storage_account_resource_group"
+  location = var.location
+
+  tags = local.common_tags
+}
+
+resource "azurerm_storage_account" "first_storage_account" {
+  name                     = "danielgilstorageaccount"
+  resource_group_name      = azurerm_resource_group.first_resource_group.name
+  location                 = var.location
+  account_tier             = var.account_tier
+  account_replication_type = var.account_replication_type
+
+  tags = local.common_tags
+}
+```
+
+aqui conseguimos utilizar a sintaxe para recuperar o nome do recurso anterior via azurerm_resource_group.first_resource_group.name <br>
+além dos atributos visíveis, podem ver na docs quais atrbituos determinado recurso exporta e utilizar, por exemplo azurerm_resource_group.first_resource_group.id, aqui recuperamos o id e poderemos referenciar
+
+# Aula 24 Local Values
 
